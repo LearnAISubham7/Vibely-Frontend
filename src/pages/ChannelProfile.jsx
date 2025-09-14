@@ -1,0 +1,79 @@
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { VideosHomePage } from "../components/VideosHomePage";
+import UploadPopup from "../components/VideoUploadPopup";
+import { Tweets } from "../components/Tweets";
+import { Videos } from "../components/Videos";
+import { Playlists } from "../components/Playlists";
+import { useUser } from "../context/UserContext";
+export function ChannelProfile() {
+  const [activeTab, setActiveTab] = useState("videos");
+
+  const { user, loading } = useUser();
+
+  if (loading) {
+    return <div>loading...</div>;
+  }
+
+  return (
+    <div className="flex flex-col w-full">
+      <div className="p-4 relative w-full h-56  ">
+        <img
+          src={user.data.coverImage}
+          alt="Cover"
+          className="rounded-2xl w-full h-full object-cover"
+        />
+      </div>
+      <div className="mt-2 px-6 flex justify-between items-center">
+        <div className=" flex">
+          <div className="left-6 bottom-[-40px]">
+            <img
+              src={user.data.avater}
+              alt="Profile"
+              className="w-32 h-32 rounded-full border-4 border-white dark:border-gray-900"
+            />
+          </div>
+          <div className=" ml-2">
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              {user.data.fullName}
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              @{user.data.username} • 120K subscribers
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              250 subscribed • 567 videos
+            </p>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg">
+              Edit
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="flex space-x-6 border-b border-gray-700 mt-6 px-6">
+        {["videos", "tweets", "playlists", "about"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`pb-3 capitalize ${
+              activeTab === tab
+                ? "border-b-2 border-red-500 text-red-500"
+                : "text-gray-400 hover:text-white cursor-pointer"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+      {activeTab === "videos" && <Videos />}
+      {activeTab === "tweets" && <Tweets />}
+      {activeTab === "playlists" && <Playlists />}
+      {activeTab === "about" && (
+        <div className="p-4">
+          <p className="text-gray-400 text-center">
+            No about information available.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
