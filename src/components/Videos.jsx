@@ -55,11 +55,13 @@ export function Videos({ isMyProfile, profileUsername }) {
     <div className="p-4">
       {/* Upload Section */}
       {isMyProfile && (
-        <div class="mb-6 flex flex-col items-center justify-center bg-gray-800 rounded-2xl p-10 border border-gray-700">
-          <div class="text-gray-300 text-lg mb-3 ">📹 Upload your video</div>
+        <div className="mb-6 flex flex-col items-center justify-center bg-gray-800 rounded-2xl p-10 border border-gray-700">
+          <div className="text-gray-300 text-lg mb-3 ">
+            📹 Upload your video
+          </div>
           <button
             onClick={() => setIsOpen(true)}
-            class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:scale-105 transition cursor-pointer"
+            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:scale-105 transition cursor-pointer"
           >
             Upload Video
           </button>

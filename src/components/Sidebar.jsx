@@ -50,14 +50,22 @@ export function Sidebar() {
         >
           📂 Collections
         </a>
-        <a
-          href="#"
+        <Link
+          to="/followers"
           className="flex items-center gap-3 px-4 py-2 rounded-xl
                     text-gray-700 dark:text-gray-200
                     hover:bg-indigo-500 hover:text-white transition-all hover:scale-105"
         >
-          👥 Subscribers
-        </a>
+          👥 followers
+        </Link>
+        <Link
+          to="/following"
+          className="flex items-center gap-3 px-4 py-2 rounded-xl
+                    text-gray-700 dark:text-gray-200
+                    hover:bg-indigo-500 hover:text-white transition-all hover:scale-105"
+        >
+          👥 following
+        </Link>
       </div>
 
       <div>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export function VideosHomePage() {
   const [videos, setVideos] = useState([]);
@@ -16,7 +17,7 @@ export function VideosHomePage() {
   return (
     <div className="flex justify-around flex-wrap gap-y-4 py-4">
       {videos?.map((video) => (
-        <div className="w-72 ">
+        <Link to={`/watch/${video._id}`} className="w-72 ">
           <div className="relative w-72 h-40">
             <img
               src={video.thumbnail}
@@ -51,7 +52,7 @@ export function VideosHomePage() {
               </p>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

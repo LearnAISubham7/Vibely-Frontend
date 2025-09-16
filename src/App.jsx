@@ -13,6 +13,8 @@ import RouteProgress from "./Hooks/RouteProgress.js";
 import { PlaylistDetailPage } from "./components/PlaylistDetailPage.jsx";
 import { AddToPlaylist } from "./components/PlaylistAddVideo.jsx";
 import { EditChannel } from "./components/EditProfile.jsx";
+import { FollowingPage } from "./components/FollowingPage.jsx";
+import { FollowersPage } from "./components/FollowersPage.jsx";
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
               element={<AddToPlaylist />}
             />
             <Route path="/edit-profile" element={<EditChannel />} />
+            <Route path="/following" element={<FollowingPage />} />
+            <Route path="/followers" element={<FollowersPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
