@@ -2,37 +2,70 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import VideoUploadPopup from "./VideoUploadPopup";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+// import { useUser } from "../context/UserContext";
+import { VideoUpdatePopup } from "./VideoUpdatePopup";
 
-export function Videos() {
+export function Videos({ isMyProfile, profileUsername }) {
   const [videos, setVideos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  // const { user } = useUser();
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/videos/`, {
-        withCredentials: true,
-      })
+      .get(
+        `${import.meta.env.VITE_BACKEND_URL}/videos/user/${profileUsername}/`,
+        {
+          withCredentials: true,
+        }
+      )
       .then((response) => {
         console.log("Video data:", response.data);
-        setVideos(response.data.data.videos);
+        setVideos(response.data.data);
       })
       .catch((error) => {
         console.error("Error fetching current user data:", error);
       });
-  }, []);
+  }, [profileUsername]);
+
+  const [menuOpen, setMenuOpen] = useState(null);
+  console.log(videos);
+
+  // Close menu if click outside
+
+  const [updateOpen, setUpdateOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+
+  function onEdit(video) {
+    setSelectedVideo(video);
+    setUpdateOpen(true);
+  }
+  async function onDelete(video) {
+    console.log(video);
+    await axios.delete(
+      `${import.meta.env.VITE_BACKEND_URL}/videos/${video._id}`,
+      {
+        withCredentials: true,
+      }
+    );
+    setVideos((prev) => prev.filter((v) => v._id !== video._id));
+    alert("Video deleted successfully");
+  }
   return (
     <div className="p-4">
       {/* Upload Section */}
-      <div class="mb-6 flex flex-col items-center justify-center bg-gray-800 rounded-2xl p-10 border border-gray-700">
-        <div class="text-gray-300 text-lg mb-3 ">📹 Upload your video</div>
-        <button
-          onClick={() => setIsOpen(true)}
-          class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:scale-105 transition cursor-pointer"
-        >
-          Upload Video
-        </button>
-        <VideoUploadPopup isOpen={isOpen} onClose={() => setIsOpen(false)} />
-      </div>
+      {isMyProfile && (
+        <div class="mb-6 flex flex-col items-center justify-center bg-gray-800 rounded-2xl p-10 border border-gray-700">
+          <div class="text-gray-300 text-lg mb-3 ">📹 Upload your video</div>
+          <button
+            onClick={() => setIsOpen(true)}
+            class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 hover:scale-105 transition cursor-pointer"
+          >
+            Upload Video
+          </button>
+          <VideoUploadPopup isOpen={isOpen} onClose={() => setIsOpen(false)} />
+        </div>
+      )}
 
       {/* Videos Section */}
       {videos && videos.length > 0 ? (
@@ -51,6 +84,48 @@ export function Videos() {
                     alt={video.title}
                     className="w-full h-full object-cover"
                   />
+                  {isMyProfile && (
+                    <>
+                      <div
+                        onClick={(e) => {
+                          e.preventDefault(); // prevent navigation
+                          e.stopPropagation(); // stop bubbling to Link
+                          setMenuOpen(
+                            menuOpen === video._id ? null : video._id
+                          );
+                        }}
+                        className="absolute top-2 right-2 bg-black/70 px-1 py-1 rounded-md text-xs text-white flex items-center justify-center"
+                      >
+                        <MoreVertical className="w-4 h-4" />
+                      </div>
+                      {menuOpen === video._id && (
+                        <div className="absolute top-0 right-0 mt-2 mr-8 w-28 rounded-md  shadow-lg z-10">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault(); // prevent navigation
+                              e.stopPropagation();
+                              onEdit(video);
+                              setMenuOpen(false);
+                            }}
+                            className="flex items-center gap-2 w-full px-3 py-2 my-2  text-sm bg-yellow-500 hover:bg-yellow-600 cursor-pointer"
+                          >
+                            <Pencil className="w-4 h-4" /> Update
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault(); // prevent navigation
+                              e.stopPropagation();
+                              onDelete(video);
+                              setMenuOpen(false);
+                            }}
+                            className="flex items-center gap-2 w-full px-3 py-2 text-sm bg-red-600 hover:bg-red-700 cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" /> Delete
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
 
                 {/* Info */}
@@ -68,6 +143,19 @@ export function Videos() {
               </div>
             </Link>
           ))}
+          <VideoUpdatePopup
+            isOpen={updateOpen}
+            onClose={() => setUpdateOpen(false)}
+            video={selectedVideo}
+            onUpdated={(updatedVideo) => {
+              // Update state with new values
+              setVideos((prev) =>
+                prev.map((v) =>
+                  v?._id === updatedVideo?._id ? updatedVideo : v
+                )
+              );
+            }}
+          />
         </div>
       ) : (
         <p className="text-gray-400 text-center">No videos uploaded yet.</p>

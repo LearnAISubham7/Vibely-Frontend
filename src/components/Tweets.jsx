@@ -1,31 +1,31 @@
 import axios from "axios";
 import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useUser } from "../context/UserContext";
+// import { useUser } from "../context/UserContext";
 
-export function Tweets() {
+export function Tweets({ isMyProfile, profileUsername }) {
   const [tweet, setTweet] = useState("");
   const [tweets, setTweets] = useState([]);
-  const { user } = useUser();
+  // const { user } = useUser();
 
   useEffect(() => {
     const fetchTweets = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/tweets/user`,
+          `${import.meta.env.VITE_BACKEND_URL}/tweets/user/${profileUsername}`,
           {
             withCredentials: true,
           }
         );
         console.log("Fetched tweets:", response.data.data);
-        setTweets(response.data.data.tweets);
+        setTweets(response.data.data);
       } catch (error) {
         console.error("Error fetching tweets:", error);
       }
     };
 
     fetchTweets();
-  }, []);
+  }, [profileUsername]);
 
   const handleSend = () => {
     if (tweet.trim() === "") return;
@@ -46,22 +46,6 @@ export function Tweets() {
       .catch((error) => {
         console.error("Error creating tweet:", error);
       });
-  };
-
-  const updateTweet = async (tweetId) => {
-    try {
-      const response = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/tweets/${tweetId}`,
-        { content: tweet },
-        { withCredentials: true }
-      );
-      console.log("Updated tweet:", response.data);
-      setTweets((prev) =>
-        prev.map((t) => (t._id === tweetId ? response.data.data : t))
-      );
-    } catch (error) {
-      console.error("Error updating tweet:", error);
-    }
   };
 
   const [editingTweetId, setEditingTweetId] = useState(null);
@@ -89,46 +73,36 @@ export function Tweets() {
     }
   };
 
-  // const handleLike = (id) => {
-  //   setTweets((prev) =>
-  //     prev.map((t) => (t.id === id ? { ...t, likes: t.likes + 1 } : t))
-  //   );
-  // };
-
-  // const handleDislike = (id) => {
-  //   setTweets((prev) =>
-  //     prev.map((t) => (t.id === id ? { ...t, dislikes: t.dislikes + 1 } : t))
-  //   );
-  // };
-
   return (
     <div className="bg-gray-900 text-white p-6 rounded-2xl shadow-lg w-full ">
       {/* Tweet Input */}
-      <div className="mb-6">
-        <textarea
-          value={tweet}
-          onChange={(e) => setTweet(e.target.value)}
-          placeholder="What's happening?"
-          className="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-          rows={3}
-        />
-        <div className="flex justify-between items-center mt-2">
-          <button
-            className="p-2 rounded-full hover:bg-gray-700 transition"
-            title="Add Emoji"
-          >
-            {/* <Smile className="w-5 h-5 text-yellow-400" /> */}
-            😄
-          </button>
-          <button
-            onClick={handleSend}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 transition"
-          >
-            {/* <Send className="w-4 h-4" /> */}
-            ▶️ Send
-          </button>
+      {isMyProfile && (
+        <div className="mb-6">
+          <textarea
+            value={tweet}
+            onChange={(e) => setTweet(e.target.value)}
+            placeholder="What's happening?"
+            className="w-full p-3 rounded-xl bg-gray-800 border border-gray-700 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            rows={3}
+          />
+          <div className="flex justify-between items-center mt-2">
+            <button
+              className="p-2 rounded-full hover:bg-gray-700 transition"
+              title="Add Emoji"
+            >
+              {/* <Smile className="w-5 h-5 text-yellow-400" /> */}
+              😄
+            </button>
+            <button
+              onClick={handleSend}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 transition cursor-pointer"
+            >
+              {/* <Send className="w-4 h-4" /> */}
+              ▶️ Send
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Tweets List */}
       {tweets && tweets.length > 0 ? (
@@ -153,32 +127,23 @@ export function Tweets() {
                       <div>{new Date(t.createdAt).toLocaleString()}</div>
                     </span>
                   </div>
-                  <div className="flex justify-between items-center ">
-                    <div>
+                  <div className="flex justify-between items-start gap-4 ">
+                    <div className=" flex-1">
                       {editingTweetId === t._id ? (
-                        <>
-                          <input
+                        <div className="mt-2 w-full">
+                          <textarea
+                            autoFocus
                             value={editingContent}
                             onChange={(e) => setEditingContent(e.target.value)}
-                            className=""
+                            rows="2"
+                            cols="125"
+                            className=" bg-transparent border-none outline-none p-0 m-0 text-white break-all whitespace-pre-wrap resize-none"
                           />
-                          {/* <div className="flex gap-2 mt-2">
-                            <button
-                              onClick={() => saveUpdate(t._id)}
-                              className="px-3 py-1 bg-green-600 rounded hover:bg-green-700"
-                            >
-                              ✅ Save
-                            </button>
-                            <button
-                              onClick={() => setEditingTweetId(null)}
-                              className="px-3 py-1 bg-gray-600 rounded hover:bg-gray-700"
-                            >
-                              ❌ Cancel
-                            </button>
-                          </div> */}
-                        </>
+                        </div>
                       ) : (
-                        <p className="mt-1">{t.content}</p>
+                        <p className="mt-1 break-all whitespace-pre-wrap max-w-full">
+                          {t.content}
+                        </p>
                       )}
                       <div className="flex gap-4 mt-2 text-gray-400">
                         <button
@@ -199,36 +164,56 @@ export function Tweets() {
                         </button>
                       </div>
                     </div>
-                    {t?.owner?._id === user?.data._id && (
-                      <div className="flex mt-1 gap-2">
-                        <button
-                          onClick={() => startEditing(t)}
-                          className="flex items-center gap-2 bg-yellow-500 px-3 py-1.5 rounded-full text-sm hover:bg-yellow-600 transition cursor-pointer"
-                        >
-                          ✏️ Update
-                        </button>
-                        <button
-                          onClick={async () => {
-                            try {
-                              await axios.delete(
-                                `${import.meta.env.VITE_BACKEND_URL}/tweets/${
-                                  t._id
-                                }`,
-                                { withCredentials: true }
-                              );
-                              setTweets((prev) =>
-                                prev.filter((tweet) => tweet._id !== t._id)
-                              );
-                            } catch (err) {
-                              console.error("Error deleting tweet:", err);
-                            }
-                          }}
-                          className="flex items-center gap-2 bg-red-600 px-3 py-1.5 rounded-full text-sm hover:bg-red-700 transition cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" /> Delete
-                        </button>
-                      </div>
-                    )}
+                    {/* t?.owner?._id === user?.data._id */}
+                    {isMyProfile &&
+                      (editingTweetId === t._id ? (
+                        <div className="flex flex-col mt-1 gap-2">
+                          <button
+                            onClick={() => saveUpdate(t._id)}
+                            className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded cursor-pointer"
+                          >
+                            💾 Save
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingTweetId(null);
+                              setEditingContent("");
+                            }}
+                            className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded cursor-pointer"
+                          >
+                            ❌ Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col mt-1 gap-2 ">
+                          <button
+                            onClick={() => startEditing(t)}
+                            className="flex items-center gap-2 bg-yellow-500 px-3 py-1.5 rounded-full text-sm hover:bg-yellow-600 transition cursor-pointer"
+                          >
+                            ✏️ Update
+                          </button>
+                          <button
+                            onClick={async () => {
+                              try {
+                                await axios.delete(
+                                  `${import.meta.env.VITE_BACKEND_URL}/tweets/${
+                                    t._id
+                                  }`,
+                                  { withCredentials: true }
+                                );
+                                setTweets((prev) =>
+                                  prev.filter((tweet) => tweet._id !== t._id)
+                                );
+                              } catch (err) {
+                                console.error("Error deleting tweet:", err);
+                              }
+                            }}
+                            className="flex items-center gap-2 bg-red-600 px-3 py-1.5 rounded-full text-sm hover:bg-red-700 transition cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" /> Delete
+                          </button>
+                        </div>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -236,7 +221,7 @@ export function Tweets() {
           ))}
         </div>
       ) : (
-        <p className="text-gray-400 text-center">No videos uploaded yet.</p>
+        <p className="text-gray-400 text-center">No tweets uploaded yet.</p>
       )}
     </div>
   );

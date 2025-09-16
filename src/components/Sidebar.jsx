@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 export function Sidebar() {
   return (
@@ -9,14 +10,14 @@ export function Sidebar() {
               shadow-sm flex flex-col p-4 justify-between"
     >
       <div>
-        <a
-          href="#"
+        <Link
+          to="/"
           className="flex items-center gap-3 px-4 py-2 rounded-xl
                     text-gray-700 dark:text-gray-200
                     hover:bg-indigo-500 hover:text-white transition-all hover:scale-105"
         >
           🏠 Home
-        </a>
+        </Link>
         <a
           href="#"
           className="flex items-center gap-3 px-4 py-2 rounded-xl

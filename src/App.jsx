@@ -12,6 +12,7 @@ import AnyOneProfile from "./pages/AnyOneProfile";
 import RouteProgress from "./Hooks/RouteProgress.js";
 import { PlaylistDetailPage } from "./components/PlaylistDetailPage.jsx";
 import { AddToPlaylist } from "./components/PlaylistAddVideo.jsx";
+import { EditChannel } from "./components/EditProfile.jsx";
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
         <RouteProgress />
         <Routes>
           <Route path="/" element={<Layout />}>
-            {/* <Route index element={<LandingPage />} /> */}
+            <Route index element={<LandingPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
             <Route path="/:username" element={<ChannelProfile />} />
@@ -31,7 +32,7 @@ function App() {
               path="/playlist/:id/add-videos"
               element={<AddToPlaylist />}
             />
-            {/* <Route path=":username" element={<AnyOneProfile />} /> */}
+            <Route path="/edit-profile" element={<EditChannel />} />
           </Route>
         </Routes>
       </BrowserRouter>
