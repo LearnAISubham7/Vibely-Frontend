@@ -4,6 +4,10 @@ import { useParams } from "react-router-dom";
 export function VideoDetailPage() {
   const { id } = useParams();
   const [video, setVideo] = useState(null);
+  const [likeCount, setLikeCount] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [subscriberCount, setSubscriberCount] = useState(0);
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
   useEffect(() => {
     axios
@@ -13,8 +17,36 @@ export function VideoDetailPage() {
       .then((res) => {
         console.log(res.data.data);
         setVideo(res.data.data);
+        setLikeCount(res.data.data.likeCount);
+        setIsLiked(res.data.data.isLiked || false);
+        setSubscriberCount(res.data.data.subscriberCount || 0);
+        setIsSubscribed(res.data.data.isSubscribed);
       });
-  }, []);
+  }, [id]);
+
+  async function handelLike(videoId) {
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/likes/toggle/v/${videoId}`,
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(res.data);
+    setLikeCount(res.data.data.likeCount);
+    setIsLiked(res.data.data.isLiked || false);
+  }
+
+  async function handleSubscribe(channelId) {
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/subscriptions/toggle/${channelId}`,
+      {},
+      { withCredentials: true }
+    );
+
+    setSubscriberCount(res.data.data.subscriberCount);
+    setIsSubscribed(res.data.data.isSubscribed);
+  }
 
   if (!video) {
     return <div>Loading...</div>;
@@ -47,22 +79,33 @@ export function VideoDetailPage() {
                 <p className="text-gray-300 font-medium">
                   {video.owner.fullName}
                 </p>
-                <p className="text-gray-500 text-sm">193K subscribers</p>
+                <p className="text-gray-500 text-sm">
+                  {" "}
+                  {subscriberCount} subscribers
+                </p>
               </div>
-              <button className=" ml-4 px-4 py-2 bg-red-600 rounded-full text-white font-semibold">
-                Subscribe
+              <button
+                onClick={() => handleSubscribe(video.owner._id)}
+                className={`ml-4 px-4 py-2 rounded-full font-semibold transition ${
+                  isSubscribed
+                    ? "bg-gray-600 text-white hover:bg-gray-500"
+                    : "bg-red-600 text-white hover:bg-red-500"
+                }`}
+              >
+                {isSubscribed ? "Subscribed" : "Subscribe"}
               </button>
             </div>
             <div className="flex items-center gap-4 ">
-              <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                👍 <span>Like</span>
+              <button
+                onClick={() => handelLike(video._id)}
+                className={`px-4 py-2 rounded-full cursor-pointer ${
+                  isLiked ? "bg-red-500 text-white" : "bg-gray-200 text-black"
+                }`}
+              >
+                {isLiked ? "❤️ Liked" : "🤍 Like"} {likeCount}
               </button>
 
-              <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                👎
-              </button>
-
-              <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+              <button className="flex items-center gap-2 px-4 py-2 rounded-full text-white bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                 ⬇️ <span>Download</span>
               </button>
             </div>

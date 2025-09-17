@@ -27,7 +27,7 @@ export function PlaylistDetailPage() {
           `${import.meta.env.VITE_BACKEND_URL}/playlist/${id}`,
           { withCredentials: true }
         );
-        // console.log("response.data", response.data);
+        console.log("response.data", response.data);
 
         setPlaylist(response.data.data);
       } catch (error) {

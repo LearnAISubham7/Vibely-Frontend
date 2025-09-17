@@ -15,6 +15,7 @@ import { AddToPlaylist } from "./components/PlaylistAddVideo.jsx";
 import { EditChannel } from "./components/EditProfile.jsx";
 import { FollowingPage } from "./components/FollowingPage.jsx";
 import { FollowersPage } from "./components/FollowersPage.jsx";
+import { LikedVideosPage } from "./components/LikedVideos.jsx";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route path="/edit-profile" element={<EditChannel />} />
             <Route path="/following" element={<FollowingPage />} />
             <Route path="/followers" element={<FollowersPage />} />
+            <Route path="/liked-videos" element={<LikedVideosPage />} />
           </Route>
         </Routes>
       </BrowserRouter>
