@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
+import { Link } from "react-router-dom";
 
 export function FollowingPage() {
   const { user } = useUser();
@@ -55,9 +56,10 @@ export function FollowingPage() {
           </p>
         ) : (
           channels.map((channel) => (
-            <div
+            <Link
+              to={`/${channel.username}`}
               key={channel._id}
-              className="flex items-center justify-between bg-gray-800 p-4 rounded-lg shadow-md"
+              className="flex items-center justify-between bg-gray-800 p-4 rounded-lg shadow-md cursor-pointer"
             >
               <div className="flex items-center space-x-4">
                 <img
@@ -80,7 +82,7 @@ export function FollowingPage() {
               >
                 Subscribed
               </button>
-            </div>
+            </Link>
           ))
         )}
       </div>

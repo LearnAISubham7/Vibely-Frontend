@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
+import { Link } from "react-router-dom";
 
 export function FollowersPage() {
   const { user } = useUser();
@@ -60,7 +61,8 @@ export function FollowersPage() {
           </p>
         ) : (
           followers.map((follower) => (
-            <div
+            <Link
+              to={`/${follower.username}`}
               key={follower._id}
               className="flex items-center justify-between bg-gray-800 p-4 rounded-lg shadow-md"
             >
@@ -87,7 +89,7 @@ export function FollowersPage() {
               >
                 {follower.isSubscribed ? "Subscribed" : "Subscribe"}
               </button>
-            </div>
+            </Link>
           ))
         )}
       </div>
