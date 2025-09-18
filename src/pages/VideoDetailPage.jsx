@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 export function VideoDetailPage() {
@@ -151,7 +151,7 @@ export function VideoDetailPage() {
           </div>
 
           {/* Video Title */}
-          <h2 className="mt-4 text-2xl font-semibold text-gray-300 ">
+          <h2 className="mt-4 text-2xl font-semibold text-gray-300 line-clamp-2">
             {video.title}
           </h2>
 
@@ -159,19 +159,24 @@ export function VideoDetailPage() {
 
           <div className=" mt-2 flex justify-between items-center">
             <div className="flex items-center">
-              <img
-                src={video.owner.avater}
-                className="w-9 h-9 rounded-full object-cover"
-              />
-              <div className=" ml-4">
-                <p className="text-gray-300 font-medium">
-                  {video.owner.fullName}
-                </p>
-                <p className="text-gray-500 text-sm">
-                  {" "}
-                  {subscriberCount} subscribers
-                </p>
-              </div>
+              <Link
+                to={`/${video.owner.username}`}
+                className=" flex items-center"
+              >
+                <img
+                  src={video.owner.avater}
+                  className="w-9 h-9 rounded-full object-cover"
+                />
+                <div className=" ml-4">
+                  <p className="text-gray-300 font-medium">
+                    {video.owner.fullName}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    {" "}
+                    {subscriberCount} subscribers
+                  </p>
+                </div>
+              </Link>
               <button
                 onClick={() => handleSubscribe(video.owner._id)}
                 className={`ml-4 px-4 py-2 rounded-full font-semibold transition ${
