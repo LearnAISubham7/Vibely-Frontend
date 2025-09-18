@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
 
 export function VideosHomePage() {
   const [videos, setVideos] = useState([]);
@@ -14,10 +15,27 @@ export function VideosHomePage() {
         setVideos(res.data.data.videos);
       });
   }, []);
+
+  function formatDuration(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+
+    if (h > 0) {
+      return [
+        h,
+        m.toString().padStart(2, "0"),
+        s.toString().padStart(2, "0"),
+      ].join(":");
+    } else {
+      return [m, s.toString().padStart(2, "0")].join(":");
+    }
+  }
+
   return (
     <div className="flex justify-around flex-wrap gap-y-4 py-4">
       {videos?.map((video) => (
-        <Link to={`/watch/${video._id}`} className="w-72 ">
+        <Link to={`/watch/${video._id}`} key={video._id} className="w-72 ">
           <div className="relative w-72 h-40">
             <img
               src={video.thumbnail}
@@ -29,7 +47,7 @@ export function VideosHomePage() {
                  bg-black/80 text-white text-xs 
                  px-2 py-0.5 rounded"
             >
-              12:34
+              {formatDuration(video.duration)}
             </span>
           </div>
 
@@ -48,7 +66,10 @@ export function VideosHomePage() {
                 {video.owner.fullName}
               </p>
               <p className="text-xs text-gray-600 dark:text-gray-400">
-                120K views • 3 hours ago
+                {video.views} views •{" "}
+                {formatDistanceToNow(new Date(video.createdAt), {
+                  addSuffix: true,
+                })}
               </p>
             </div>
           </div>

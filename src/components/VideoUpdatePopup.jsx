@@ -21,11 +21,13 @@ export function VideoUpdatePopup({ isOpen, onClose, video, onUpdated }) {
     e.preventDefault();
     try {
       const formData = new FormData();
-      if (thumbnail && typeof thumbnail !== "string") {
-        formData.append("thumbnail", thumbnail);
-      }
+      // if (thumbnail && typeof thumbnail !== "string") {
+      formData.append("thumbnail", thumbnail);
+      // }
       formData.append("title", title);
       formData.append("description", description);
+      console.log(thumbnail, description, title);
+
       const res = await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/videos/${video._id}`,
         formData,

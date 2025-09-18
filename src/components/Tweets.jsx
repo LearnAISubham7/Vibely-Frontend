@@ -2,6 +2,7 @@ import axios from "axios";
 import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 // import { useUser } from "../context/UserContext";
+import { formatDistanceToNow } from "date-fns";
 
 export function Tweets({ isMyProfile, profileUsername }) {
   const [tweet, setTweet] = useState("");
@@ -124,7 +125,11 @@ export function Tweets({ isMyProfile, profileUsername }) {
                     <span className="font-semibold">{t.owner.fullName}</span>
                     <span className="text-sm text-gray-400 ">
                       {/* {t.time} */}
-                      <div>{new Date(t.createdAt).toLocaleString()}</div>
+                      <div>
+                        {formatDistanceToNow(new Date(t.createdAt), {
+                          addSuffix: true,
+                        })}
+                      </div>
                     </span>
                   </div>
                   <div className="flex justify-between items-start gap-4 ">
