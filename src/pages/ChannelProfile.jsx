@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { VideosHomePage } from "../components/VideosHomePage";
 import UploadPopup from "../components/VideoUploadPopup";
 import { Tweets } from "../components/Tweets";
@@ -8,10 +8,12 @@ import { Playlists } from "../components/Playlists";
 import { useUser } from "../context/UserContext";
 import axios from "axios";
 export function ChannelProfile() {
-  const [activeTab, setActiveTab] = useState("videos");
+  // const [activeTab, setActiveTab] = useState("videos");
+  const { username, "*": tab } = useParams(); // catch the subpath
+  const activeTab = tab || "videos"; // default tab is videos
 
   const { user, loading } = useUser();
-  const { username } = useParams();
+  // const { username } = useParams();
   const [profileUser, setProfileUser] = useState(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscriberCount, setSubscriberCount] = useState(0);
@@ -119,9 +121,10 @@ export function ChannelProfile() {
       </div>
       <div className="flex space-x-6 border-b border-gray-700 mt-6 px-6">
         {["videos", "tweets", "playlists", "about"].map((tab) => (
-          <button
+          <Link
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            // onClick={() => setActiveTab(tab)}
+            to={`/${username}/${tab}`}
             className={`pb-3 capitalize ${
               activeTab === tab
                 ? "border-b-2 border-red-500 text-red-500"
@@ -129,10 +132,10 @@ export function ChannelProfile() {
             }`}
           >
             {tab}
-          </button>
+          </Link>
         ))}
       </div>
-      {activeTab === "videos" && (
+      {/* {activeTab === "videos" && (
         <Videos isMyProfile={isMyProfile} profileUsername={username} />
       )}
       {activeTab === "tweets" && (
@@ -147,7 +150,45 @@ export function ChannelProfile() {
             No about information available.
           </p>
         </div>
-      )}
+      )} */}
+
+      <Routes>
+        <Route
+          path="videos"
+          element={
+            <Videos isMyProfile={isMyProfile} profileUsername={username} />
+          }
+        />
+        <Route
+          path="tweets"
+          element={
+            <Tweets isMyProfile={isMyProfile} profileUsername={username} />
+          }
+        />
+        <Route
+          path="playlists"
+          element={
+            <Playlists isMyProfile={isMyProfile} profileUsername={username} />
+          }
+        />
+        <Route
+          path="about"
+          element={
+            <div className="p-4">
+              <p className="text-gray-400 text-center">
+                No about information available.
+              </p>
+            </div>
+          }
+        />
+        {/* Default route */}
+        <Route
+          index
+          element={
+            <Videos isMyProfile={isMyProfile} profileUsername={username} />
+          }
+        />
+      </Routes>
     </div>
   );
 }

@@ -16,6 +16,7 @@ import { EditChannel } from "./components/EditProfile.jsx";
 import { FollowingPage } from "./components/FollowingPage.jsx";
 import { FollowersPage } from "./components/FollowersPage.jsx";
 import { LikedVideosPage } from "./components/LikedVideos.jsx";
+import { MyPlaylistsPage } from "./components/MyPlaylistsPage.jsx";
 
 function App() {
   return (
@@ -27,7 +28,7 @@ function App() {
             <Route index element={<LandingPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
-            <Route path="/:username" element={<ChannelProfile />} />
+            <Route path="/:username/*" element={<ChannelProfile />} />
             <Route path="test" element={<Test />} />
             <Route path="/watch/:id" element={<VideoDetailPage />} />
             <Route path="/playlist/:id" element={<PlaylistDetailPage />} />
@@ -39,6 +40,7 @@ function App() {
             <Route path="/following" element={<FollowingPage />} />
             <Route path="/followers" element={<FollowersPage />} />
             <Route path="/liked-videos" element={<LikedVideosPage />} />
+            <Route path="/playlists" element={<MyPlaylistsPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

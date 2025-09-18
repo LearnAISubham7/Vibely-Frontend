@@ -1,13 +1,24 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 export function VideoDetailPage() {
+  const { user } = useUser();
   const { id } = useParams();
   const [video, setVideo] = useState(null);
   const [likeCount, setLikeCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [content, setContent] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const [comments, setComments] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingContent, setEditingContent] = useState("");
+
+  // console.log(id);
 
   useEffect(() => {
     axios
@@ -21,6 +32,17 @@ export function VideoDetailPage() {
         setIsLiked(res.data.data.isLiked || false);
         setSubscriberCount(res.data.data.subscriberCount || 0);
         setIsSubscribed(res.data.data.isSubscribed);
+      });
+  }, [id]);
+
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_BACKEND_URL}/comments/${id}`, {
+        withCredentials: true,
+      })
+      .then((res) => {
+        console.log(res.data);
+        setComments(res.data.data);
       });
   }, [id]);
 
@@ -48,6 +70,71 @@ export function VideoDetailPage() {
     setIsSubscribed(res.data.data.isSubscribed);
   }
 
+  const handleCancel = () => {
+    setContent("");
+    setIsFocused(false);
+  };
+
+  const handleComment = async () => {
+    if (!content.trim()) return;
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/comments/${id}`,
+      { content },
+      { withCredentials: true }
+    );
+    console.log(res.data);
+
+    setContent("");
+    setIsFocused(false);
+    setComments((prev) => ({
+      ...prev,
+      comments: [res.data.data, ...prev.comments],
+    }));
+    setEditingCommentId(null); // exit edit mode
+    setEditingContent("");
+  };
+
+  const startEditing = (c) => {
+    setEditingCommentId(c._id);
+    setEditingContent(c.content);
+  };
+
+  const handelSave = async (id) => {
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_URL}/comments/c/${id}`,
+        { content: editingContent },
+        { withCredentials: true }
+      );
+      console.log(response.data);
+
+      setComments((prev) => ({
+        ...prev,
+        comments: prev.comments.map((c) =>
+          c._id === id ? response.data.data : c
+        ),
+      }));
+      setEditingCommentId(null); // exit edit mode
+      setEditingContent("");
+    } catch (error) {
+      console.error("Error updating tweet:", error);
+    }
+  };
+
+  async function onDelete(c) {
+    const res = await axios.delete(
+      `${import.meta.env.VITE_BACKEND_URL}/comments/c/${c._id}`,
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(res.data);
+
+    setComments((prev) => ({
+      ...prev,
+      comments: prev.comments.filter((comment) => comment._id !== c._id),
+    }));
+  }
   if (!video) {
     return <div>Loading...</div>;
   }
@@ -125,82 +212,149 @@ export function VideoDetailPage() {
           </div>
           <div className="mt-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              1,235 Comments
+              {comments?.comments?.length ?? 0} Comments
             </h2>
 
             <div className="flex gap-3 mb-6">
               <img
-                src="src\assets\b.png"
+                src={user?.data?.avater}
                 alt="User"
                 className="w-10 h-10 rounded-full object-cover"
               />
               <input
                 type="text"
                 placeholder="Add a comment..."
-                className="flex-1 border-b border-gray-400 dark:border-gray-600 bg-transparent focus:outline-none focus:border-blue-500 text-sm p-1 text-gray-900 dark:text-gray-100"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                onFocus={() => setIsFocused(true)}
+                className="flex-1 border-b border-gray-400 dark:border-gray-600 bg-transparent focus:outline-none focus:border-blue-500 text-sm p-1 text-gray-900 dark:text-gray-100 transition"
               />
             </div>
+            {/* Buttons */}
+            {isFocused && (
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={handleCancel}
+                  className="px-3 py-1 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleComment}
+                  disabled={!content.trim()}
+                  className={`px-3 py-1 rounded-full text-white font-semibold transition ${
+                    content.trim()
+                      ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                      : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  Comment
+                </button>
+              </div>
+            )}
 
-            <div className="flex gap-3 mb-5">
-              <img
-                src="src\assets\b.png"
-                alt="User"
-                className="w-10 h-10 rounded-full object-cover"
-              />
+            {(comments?.comments || []).map((comment) => (
+              <div key={comment._id} className="flex gap-3 mb-5">
+                <img
+                  src={comment.owner.avater}
+                  alt="User"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
 
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  John Doe
-                  <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                    2 hours ago
-                  </span>
-                </h3>
-                <p className="text-sm text-gray-800 dark:text-gray-200">
-                  This video was super helpful! Thanks for explaining it so
-                  clearly. Lorem ipsum dolor sit amet consectetur, adipisicing
-                  elit. Quaerat exercitationem, minus cum molestiae nihil
-                  mollitia consectetur, totam ea ad vero unde atque a, maiores
-                  facere officia sunt non provident tenetur! Lorem ipsum dolor
-                  sit amet consectetur adipisicing elit. Porro non dignissimos
-                  nobis optio! Consequuntur id repudiandae quis veniam a
-                  exercitationem qui, autem placeat nisi dolorum vel, in aperiam
-                  magnam sit.
-                </p>
+                <div className="flex-1">
+                  <div className=" relative flex justify-between">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      {comment.owner.fullName}
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
+                        2 hours ago
+                      </span>
+                    </h3>
+                    <MoreVertical
+                      className="w-5 h-5 text-white cursor-pointer "
+                      onClick={(e) => {
+                        e.preventDefault(); // prevent navigation
+                        e.stopPropagation(); // stop bubbling to Link
+                        setMenuOpen(
+                          menuOpen === comment._id ? null : comment._id
+                        );
+                      }}
+                    />
 
-                <div className="flex items-center gap-4 mt-2 text-gray-600 dark:text-gray-400 text-sm">
-                  <button>👍 24</button>
-                  <button>👎 2</button>
-                  <button className="text-xs">Reply</button>
+                    {menuOpen === comment._id &&
+                      (user.data._id === comment.owner._id ? (
+                        <div className="absolute top-0 right-0 mt-2 mr-8 w-28 rounded-md  shadow-lg z-10">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault(); // prevent navigation
+                              e.stopPropagation();
+                              startEditing(comment);
+                              setMenuOpen(false);
+                            }}
+                            className="flex items-center gap-2 w-full px-3 py-2 my-2  text-sm bg-yellow-500 hover:bg-yellow-600 cursor-pointer"
+                          >
+                            <Pencil className="w-4 h-4" /> Update
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault(); // prevent navigation
+                              e.stopPropagation();
+                              onDelete(comment);
+                              setMenuOpen(false);
+                            }}
+                            className="flex items-center gap-2 w-full px-3 py-2 text-sm bg-red-600 hover:bg-red-700 cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" /> Delete
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="absolute top-0 right-0 mt-2 mr-8 w-28 rounded-md  shadow-lg z-10">
+                          <button className="flex items-center gap-2 w-full px-3 py-2 my-2  text-sm bg-gray-500 hover:bg-gray-600 rounded  cursor-pointer">
+                            Report
+                          </button>
+                        </div>
+                      ))}
+                  </div>
+
+                  {editingCommentId === comment._id ? (
+                    <div className="mt-2">
+                      <textarea
+                        value={editingContent}
+                        onChange={(e) => setEditingContent(e.target.value)}
+                        autoFocus
+                        className="w-full p-2 text-sm text-white rounded-md "
+                      />
+                      <div className="flex justify-end gap-2 mt-2">
+                        <button
+                          onClick={() => {
+                            setEditingCommentId(null);
+                            setEditingContent("");
+                          }}
+                          className="px-3 py-1 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handelSave(comment._id)}
+                          className="px-3 py-1 rounded-full text-white font-semibold bg-blue-600 hover:bg-blue-700 transition"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-800 dark:text-gray-200">
+                      {comment.content}
+                    </p>
+                  )}
+
+                  <div className="flex items-center gap-4 mt-2 text-gray-600 dark:text-gray-400 text-sm">
+                    <button>👍 24</button>
+                    <button>👎 2</button>
+                    <button className="text-xs">Reply</button>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="flex gap-3 mb-5">
-              <img
-                src="src\assets\b.png"
-                alt="User"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  Jane Smith
-                  <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                    5 hours ago
-                  </span>
-                </h3>
-                <p className="text-sm text-gray-800 dark:text-gray-200">
-                  I didn’t understand at first, but after rewatching it clicked.
-                  Subscribed!
-                </p>
-
-                <div className="flex items-center gap-4 mt-2 text-gray-600 dark:text-gray-400 text-sm">
-                  <button>👍 10</button>
-                  <button>👎 0</button>
-                  <button className="text-xs">Reply</button>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
