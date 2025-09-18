@@ -26,7 +26,7 @@ export function VideoDetailPage() {
         withCredentials: true,
       })
       .then((res) => {
-        console.log(res.data.data);
+        console.log("res.data.data", typeof res.data.data.views);
         setVideo(res.data.data);
         setLikeCount(res.data.data.likeCount);
         setIsLiked(res.data.data.isLiked || false);
@@ -135,6 +135,7 @@ export function VideoDetailPage() {
       comments: prev.comments.filter((comment) => comment._id !== c._id),
     }));
   }
+
   if (!video) {
     return <div>Loading...</div>;
   }

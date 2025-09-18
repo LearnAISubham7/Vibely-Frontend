@@ -10,6 +10,9 @@ export function Videos({ isMyProfile, profileUsername }) {
   const [videos, setVideos] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   // const { user } = useUser();
+  const [updateOpen, setUpdateOpen] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(null);
 
   useEffect(() => {
     axios
@@ -28,18 +31,11 @@ export function Videos({ isMyProfile, profileUsername }) {
       });
   }, [profileUsername]);
 
-  const [menuOpen, setMenuOpen] = useState(null);
-  console.log(videos);
-
-  // Close menu if click outside
-
-  const [updateOpen, setUpdateOpen] = useState(false);
-  const [selectedVideo, setSelectedVideo] = useState(null);
-
   function onEdit(video) {
     setSelectedVideo(video);
     setUpdateOpen(true);
   }
+
   async function onDelete(video) {
     console.log(video);
     await axios.delete(
@@ -51,6 +47,7 @@ export function Videos({ isMyProfile, profileUsername }) {
     setVideos((prev) => prev.filter((v) => v._id !== video._id));
     alert("Video deleted successfully");
   }
+
   return (
     <div className="p-4">
       {/* Upload Section */}
