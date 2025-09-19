@@ -7,10 +7,9 @@ export function VideoDetailPage() {
   const { user } = useUser();
   const { id } = useParams();
   const [video, setVideo] = useState(null);
-  const [likeCount, setLikeCount] = useState(0);
-  const [dislikeCount, setDisLikeCount] = useState(0);
-  const [isReacted, setIsReacted] = useState("");
-  // const [isDisLiked, setIsDisLiked] = useState(false);
+  const [videoLikeCount, setVideoLikeCount] = useState(0);
+  const [videoDislikeCount, setVideoDisLikeCount] = useState(0);
+  const [isVideoReacted, setIsVideoReacted] = useState("");
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [content, setContent] = useState("");
@@ -19,7 +18,6 @@ export function VideoDetailPage() {
   const [menuOpen, setMenuOpen] = useState(null);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
-
   // console.log(id);
 
   useEffect(() => {
@@ -30,9 +28,9 @@ export function VideoDetailPage() {
       .then((res) => {
         console.log("res.data.data", res.data);
         setVideo(res.data.data);
-        setLikeCount(res.data.data.likeCount);
-        setDisLikeCount(res.data.data.dislikeCount);
-        setIsReacted(res.data.data.userReaction);
+        setVideoLikeCount(res.data.data.likeCount);
+        setVideoDisLikeCount(res.data.data.dislikeCount);
+        setIsVideoReacted(res.data.data.userReaction);
         setSubscriberCount(res.data.data.subscriberCount || 0);
         setIsSubscribed(res.data.data.isSubscribed);
       });
@@ -49,7 +47,7 @@ export function VideoDetailPage() {
       });
   }, [id]);
 
-  async function handelLike(videoId, type) {
+  async function handleVideoLike(videoId, type) {
     const res = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/likes/toggle/v/${videoId}`,
       {
@@ -61,9 +59,32 @@ export function VideoDetailPage() {
     );
     console.log(res.data);
     const { likeCount, dislikeCount, userReaction } = res.data.data;
-    setLikeCount(likeCount);
-    setDisLikeCount(dislikeCount);
-    setIsReacted(userReaction);
+    setVideoLikeCount(likeCount);
+    setVideoDisLikeCount(dislikeCount);
+    setIsVideoReacted(userReaction);
+  }
+
+  async function handleCommentLike(commentId, type) {
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/likes/toggle/c/${commentId}`,
+      {
+        type,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(res.data);
+    const { likeCount, dislikeCount, userReaction } = res.data.data;
+
+    setComments((prev) => ({
+      ...prev,
+      comments: prev.comments.map((c) =>
+        c._id === commentId
+          ? { ...c, likeCount, dislikeCount, userReaction }
+          : c
+      ),
+    }));
   }
 
   async function handleSubscribe(channelId) {
@@ -197,24 +218,24 @@ export function VideoDetailPage() {
             </div>
             <div className="flex items-center gap-4 ">
               <button
-                onClick={() => handelLike(video._id, "like")}
+                onClick={() => handleVideoLike(video._id, "like")}
                 className={`px-4 py-2 rounded-full cursor-pointer ${
-                  isReacted == "like"
+                  isVideoReacted == "like"
                     ? "bg-red-500 text-white"
                     : "bg-gray-200 text-black"
                 }`}
               >
-                👍 {likeCount}
+                👍 {videoLikeCount}
               </button>
               <button
-                onClick={() => handelLike(video._id, "dislike")}
+                onClick={() => handleVideoLike(video._id, "dislike")}
                 className={`px-4 py-2 rounded-full cursor-pointer ${
-                  isReacted == "dislike"
+                  isVideoReacted == "dislike"
                     ? "bg-red-500 text-white"
                     : "bg-gray-200 text-black"
                 }`}
               >
-                👎{dislikeCount}
+                👎{videoDislikeCount}
               </button>
 
               <button className="flex items-center gap-2 px-4 py-2 rounded-full text-white bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
@@ -369,14 +390,33 @@ export function VideoDetailPage() {
                   ) : (
                     <p className="text-sm text-gray-800 dark:text-gray-200">
                       {comment.content}
+                      <div className="flex items-center gap-4 mt-2 text-gray-600 dark:text-gray-400 text-sm">
+                        <button
+                          onClick={() => handleCommentLike(comment._id, "like")}
+                          className={`px-4 py-2 rounded-full cursor-pointer ${
+                            comment.userReaction == "like"
+                              ? "bg-red-500 text-white"
+                              : "bg-gray-200 text-black"
+                          }`}
+                        >
+                          👍 {comment.likeCount}
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleCommentLike(comment._id, "dislike")
+                          }
+                          className={`px-4 py-2 rounded-full cursor-pointer ${
+                            comment.userReaction == "dislike"
+                              ? "bg-red-500 text-white"
+                              : "bg-gray-200 text-black"
+                          }`}
+                        >
+                          👎 {comment.dislikeCount}
+                        </button>
+                        <button className="text-xs">Reply</button>
+                      </div>
                     </p>
                   )}
-
-                  <div className="flex items-center gap-4 mt-2 text-gray-600 dark:text-gray-400 text-sm">
-                    <button>👍 24</button>
-                    <button>👎 2</button>
-                    <button className="text-xs">Reply</button>
-                  </div>
                 </div>
               </div>
             ))}
