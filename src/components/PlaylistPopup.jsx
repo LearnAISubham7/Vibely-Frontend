@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import axios from "axios";
 
-export default function PlaylistPopup({ isOpen, onClose }) {
+export default function PlaylistPopup({ isOpen, onClose, onCreated }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -24,6 +24,7 @@ export default function PlaylistPopup({ isOpen, onClose }) {
       )
       .then((response) => {
         console.log("Playlist created successfully:", response.data);
+        if (onCreated) onCreated(response.data.data);
         onClose();
       })
       .catch((error) => {
@@ -75,7 +76,12 @@ export default function PlaylistPopup({ isOpen, onClose }) {
         <div className="mt-6 flex justify-end">
           <button
             onClick={handleSave}
-            className="bg-blue-600 px-4 py-2 rounded-lg text-white hover:bg-blue-700"
+            disabled={!title.trim()}
+            className={`px-4 py-2 rounded-lg text-white cursor-pointer ${
+              title.trim()
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-gray-600 cursor-not-allowed"
+            }`}
           >
             Save
           </button>

@@ -67,7 +67,7 @@ export function AddToPlaylist() {
               alt={video.title}
               className="w-full h-40 object-cover rounded-lg"
             />
-            <h3 className="mt-2 font-semibold">{video.title}</h3>
+            <h3 className="mt-2 font-semibold line-clamp-1">{video.title}</h3>
           </div>
         ))}
       </div>
@@ -75,7 +75,7 @@ export function AddToPlaylist() {
       {selected.length > 0 && (
         <button
           onClick={handleAdd}
-          className="mt-6 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700"
+          className="mt-6 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
         >
           Add {selected.length} Videos
         </button>

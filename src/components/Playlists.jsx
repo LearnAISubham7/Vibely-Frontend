@@ -12,6 +12,7 @@ export function Playlists({ isMyProfile, profileUsername }) {
   useEffect(() => {
     const fetchPlaylists = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           `${
             import.meta.env.VITE_BACKEND_URL
@@ -47,7 +48,13 @@ export function Playlists({ isMyProfile, profileUsername }) {
           >
             + Create Playlist
           </button>
-          <PlaylistPopup isOpen={isOpen} onClose={() => setIsOpen(false)} />
+          <PlaylistPopup
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            onCreated={(newPlaylist) =>
+              setPlaylists((prev) => [newPlaylist, ...prev])
+            }
+          />
         </div>
       )}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">

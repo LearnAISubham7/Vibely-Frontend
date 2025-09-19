@@ -35,7 +35,7 @@ export function PlaylistDetailPage() {
       }
     };
     fetchPlaylist();
-  }, []);
+  }, [id]);
 
   async function deleteVideoFromPlaylist(videoId) {
     try {
@@ -155,7 +155,7 @@ export function PlaylistDetailPage() {
                       }`,
                       { withCredentials: true }
                     );
-                    navigate("/channel-profile"); // redirect after delete
+                    navigate(`/${playlist.owner.username}`); // redirect after delete
                   } catch (err) {
                     console.error("Error deleting playlist:", err);
                   }
