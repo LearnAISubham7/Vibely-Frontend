@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+
 export function VideoDetailPage() {
   const { user } = useUser();
   const { id } = useParams();
@@ -312,7 +314,9 @@ export function VideoDetailPage() {
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {comment.owner.fullName}
                       <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">
-                        2 hours ago
+                        {formatDistanceToNow(new Date(comment.createdAt), {
+                          addSuffix: true,
+                        })}
                       </span>
                     </h3>
                     <MoreVertical
@@ -388,7 +392,7 @@ export function VideoDetailPage() {
                       </div>
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-800 dark:text-gray-200">
+                    <div className="text-sm text-gray-800 dark:text-gray-200">
                       {comment.content}
                       <div className="flex items-center gap-4 mt-2 text-gray-600 dark:text-gray-400 text-sm">
                         <button
@@ -415,7 +419,7 @@ export function VideoDetailPage() {
                         </button>
                         <button className="text-xs">Reply</button>
                       </div>
-                    </p>
+                    </div>
                   )}
                 </div>
               </div>

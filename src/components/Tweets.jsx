@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Trash2 } from "lucide-react";
+import { ThumbsDown, ThumbsUp, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 // import { useUser } from "../context/UserContext";
 import { formatDistanceToNow } from "date-fns";
@@ -19,7 +19,7 @@ export function Tweets({ isMyProfile, profileUsername }) {
           }
         );
         console.log("Fetched tweets:", response.data.data);
-        setTweets(response.data.data);
+        setTweets(response.data.data.tweets);
       } catch (error) {
         console.error("Error fetching tweets:", error);
       }
@@ -74,6 +74,26 @@ export function Tweets({ isMyProfile, profileUsername }) {
     }
   };
 
+  async function handleTweetLike(tweetId, type) {
+    const res = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/likes/toggle/t/${tweetId}`,
+      {
+        type,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    console.log(res.data);
+    const { likeCount, dislikeCount, userReaction } = res.data.data;
+
+    setTweets((prev) =>
+      prev.map((c) =>
+        c._id === tweetId ? { ...c, likeCount, dislikeCount, userReaction } : c
+      )
+    );
+  }
+
   return (
     <div className="bg-gray-900 text-white p-6 rounded-2xl shadow-lg w-full ">
       {/* Tweet Input */}
@@ -125,11 +145,9 @@ export function Tweets({ isMyProfile, profileUsername }) {
                     <span className="font-semibold">{t.owner.fullName}</span>
                     <span className="text-sm text-gray-400 ">
                       {/* {t.time} */}
-                      <div>
-                        {formatDistanceToNow(new Date(t.createdAt), {
-                          addSuffix: true,
-                        })}
-                      </div>
+                      {formatDistanceToNow(new Date(t.createdAt), {
+                        addSuffix: true,
+                      })}
                     </span>
                   </div>
                   <div className="flex justify-between items-start gap-4 ">
@@ -153,19 +171,33 @@ export function Tweets({ isMyProfile, profileUsername }) {
                       <div className="flex gap-4 mt-2 text-gray-400">
                         <button
                           // onClick={() => handleLike(t._id)}
+                          onClick={() => handleTweetLike(t._id, "like")}
                           className="flex items-center gap-1 hover:text-blue-400"
                         >
-                          {/* <ThumbsUp className="w-4 h-4" /> */}
-                          👍
+                          <ThumbsUp
+                            className={`w-4 h-4 cursor-pointer ${
+                              t.userReaction === "like"
+                                ? "text-blue-500 fill-blue-500"
+                                : ""
+                            }`}
+                          />
                           {/* {t.likes} */}
+                          {t.likeCount}
                         </button>
                         <button
                           // onClick={() => handleDislike(t.id)}
+                          onClick={() => handleTweetLike(t._id, "dislike")}
                           className="flex items-center gap-1 hover:text-red-400"
                         >
-                          {/* <ThumbsDown className="w-4 h-4" />  */}
-                          👎
+                          <ThumbsDown
+                            className={`w-4 h-4 cursor-pointer rotate-180 ${
+                              t.userReaction === "dislike"
+                                ? "text-red-500 fill-red-500"
+                                : ""
+                            }`}
+                          />
                           {/* {t.dislikes} */}
+                          {t.dislikeCount}
                         </button>
                       </div>
                     </div>
