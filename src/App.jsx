@@ -17,6 +17,8 @@ import { FollowingPage } from "./components/FollowingPage.jsx";
 import { FollowersPage } from "./components/FollowersPage.jsx";
 import { LikedVideosPage } from "./components/LikedVideos.jsx";
 import { MyPlaylistsPage } from "./components/MyPlaylistsPage.jsx";
+import WatchHistory from "./components/History.jsx";
+import Dashboard from "./components/Dashboard.jsx";
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
             <Route path="/followers" element={<FollowersPage />} />
             <Route path="/liked-videos" element={<LikedVideosPage />} />
             <Route path="/playlists" element={<MyPlaylistsPage />} />
+            <Route path="/history" element={<WatchHistory />} />
+            <Route path="/das" element={<Dashboard />} />
           </Route>
         </Routes>
       </BrowserRouter>

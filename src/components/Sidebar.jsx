@@ -26,14 +26,14 @@ export function Sidebar() {
         >
           ❤️ Liked Videos
         </Link>
-        <a
-          href="#"
+        <Link
+          to="/history"
           className="flex items-center gap-3 px-4 py-2 rounded-xl
                     text-gray-700 dark:text-gray-200
                     hover:bg-indigo-500 hover:text-white transition-all hover:scale-105"
         >
           📜 History
-        </a>
+        </Link>
         <a
           href="#"
           className="flex items-center gap-3 px-4 py-2 rounded-xl

@@ -8,7 +8,9 @@ export function VideoDetailPage() {
   const { id } = useParams();
   const [video, setVideo] = useState(null);
   const [likeCount, setLikeCount] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
+  const [dislikeCount, setDisLikeCount] = useState(0);
+  const [isReacted, setIsReacted] = useState("");
+  // const [isDisLiked, setIsDisLiked] = useState(false);
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [content, setContent] = useState("");
@@ -26,10 +28,11 @@ export function VideoDetailPage() {
         withCredentials: true,
       })
       .then((res) => {
-        console.log("res.data.data", typeof res.data.data.views);
+        console.log("res.data.data", res.data);
         setVideo(res.data.data);
         setLikeCount(res.data.data.likeCount);
-        setIsLiked(res.data.data.isLiked || false);
+        setDisLikeCount(res.data.data.dislikeCount);
+        setIsReacted(res.data.data.userReaction);
         setSubscriberCount(res.data.data.subscriberCount || 0);
         setIsSubscribed(res.data.data.isSubscribed);
       });
@@ -46,17 +49,21 @@ export function VideoDetailPage() {
       });
   }, [id]);
 
-  async function handelLike(videoId) {
+  async function handelLike(videoId, type) {
     const res = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/likes/toggle/v/${videoId}`,
-      {},
+      {
+        type,
+      },
       {
         withCredentials: true,
       }
     );
     console.log(res.data);
-    setLikeCount(res.data.data.likeCount);
-    setIsLiked(res.data.data.isLiked || false);
+    const { likeCount, dislikeCount, userReaction } = res.data.data;
+    setLikeCount(likeCount);
+    setDisLikeCount(dislikeCount);
+    setIsReacted(userReaction);
   }
 
   async function handleSubscribe(channelId) {
@@ -190,12 +197,24 @@ export function VideoDetailPage() {
             </div>
             <div className="flex items-center gap-4 ">
               <button
-                onClick={() => handelLike(video._id)}
+                onClick={() => handelLike(video._id, "like")}
                 className={`px-4 py-2 rounded-full cursor-pointer ${
-                  isLiked ? "bg-red-500 text-white" : "bg-gray-200 text-black"
+                  isReacted == "like"
+                    ? "bg-red-500 text-white"
+                    : "bg-gray-200 text-black"
                 }`}
               >
-                {isLiked ? "❤️ Liked" : "🤍 Like"} {likeCount}
+                👍 {likeCount}
+              </button>
+              <button
+                onClick={() => handelLike(video._id, "dislike")}
+                className={`px-4 py-2 rounded-full cursor-pointer ${
+                  isReacted == "dislike"
+                    ? "bg-red-500 text-white"
+                    : "bg-gray-200 text-black"
+                }`}
+              >
+                👎{dislikeCount}
               </button>
 
               <button className="flex items-center gap-2 px-4 py-2 rounded-full text-white bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
