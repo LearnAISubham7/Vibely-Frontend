@@ -30,7 +30,6 @@ function App() {
             <Route index element={<LandingPage />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="signup" element={<SignupPage />} />
-            <Route path="/:username/*" element={<ChannelProfile />} />
             <Route path="test" element={<Test />} />
             <Route path="/watch/:id" element={<VideoDetailPage />} />
             <Route path="/playlist/:id" element={<PlaylistDetailPage />} />
@@ -44,7 +43,8 @@ function App() {
             <Route path="/liked-videos" element={<LikedVideosPage />} />
             <Route path="/playlists" element={<MyPlaylistsPage />} />
             <Route path="/history" element={<WatchHistory />} />
-            <Route path="/das" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/:username/*" element={<ChannelProfile />} />
           </Route>
         </Routes>
       </BrowserRouter>

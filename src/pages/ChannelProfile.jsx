@@ -98,12 +98,20 @@ export function ChannelProfile() {
               • {profileUser.data.videoCount} videos
             </p>
             {isMyProfile ? (
-              <button
-                onClick={() => navigate("/edit-profile")}
-                className="px-4 mt-2 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
-              >
-                Edit
-              </button>
+              <>
+                <button
+                  onClick={() => navigate("/edit-profile")}
+                  className="px-4 mt-2 py-2 bg-blue-600 text-white rounded-lg cursor-pointer"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="px-4 mt-2 py-2 ml-2 bg-blue-600 text-white rounded-lg cursor-pointer"
+                >
+                  Dashboard
+                </button>
+              </>
             ) : (
               <button
                 onClick={handleSubscribe}

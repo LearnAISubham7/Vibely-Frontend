@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { VideoTable } from "./VideoTable";
 
 export default function Dashboard() {
   // Dummy stats
@@ -24,29 +25,29 @@ export default function Dashboard() {
   }, []);
 
   // Dummy videos
-  const videos = [
-    {
-      _id: "1",
-      title: "Building a YouTube Clone in React with Tailwind",
-      thumbnail: "https://placehold.co/400x250?text=Video+1",
-      views: 1200,
-      createdAt: "2025-09-10",
-    },
-    {
-      _id: "2",
-      title: "Understanding Node.js & Express in 10 Minutes",
-      thumbnail: "https://placehold.co/400x250?text=Video+2",
-      views: 940,
-      createdAt: "2025-09-05",
-    },
-    {
-      _id: "3",
-      title: "Mastering MongoDB Aggregation Pipelines",
-      thumbnail: "https://placehold.co/400x250?text=Video+3",
-      views: 760,
-      createdAt: "2025-08-30",
-    },
-  ];
+  // const videos = [
+  //   {
+  //     _id: "1",
+  //     title: "Building a YouTube Clone in React with Tailwind",
+  //     thumbnail: "https://placehold.co/400x250?text=Video+1",
+  //     views: 1200,
+  //     createdAt: "2025-09-10",
+  //   },
+  //   {
+  //     _id: "2",
+  //     title: "Understanding Node.js & Express in 10 Minutes",
+  //     thumbnail: "https://placehold.co/400x250?text=Video+2",
+  //     views: 940,
+  //     createdAt: "2025-09-05",
+  //   },
+  //   {
+  //     _id: "3",
+  //     title: "Mastering MongoDB Aggregation Pipelines",
+  //     thumbnail: "https://placehold.co/400x250?text=Video+3",
+  //     views: 760,
+  //     createdAt: "2025-08-30",
+  //   },
+  // ];
 
   return (
     <div className=" text-white min-h-screen p-6">
@@ -62,7 +63,7 @@ export default function Dashboard() {
 
       {/* Uploaded Videos */}
       <h2 className="text-xl font-semibold mb-4">Uploaded Videos</h2>
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         {videos.map((video) => (
           <div
             key={video._id}
@@ -84,7 +85,8 @@ export default function Dashboard() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
+      <VideoTable />
     </div>
   );
 }

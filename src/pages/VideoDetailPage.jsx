@@ -209,7 +209,7 @@ export function VideoDetailPage() {
               </Link>
               <button
                 onClick={() => handleSubscribe(video.owner._id)}
-                className={`ml-4 px-4 py-2 rounded-full font-semibold transition ${
+                className={`ml-4 px-4 py-2 rounded-full font-semibold transition cursor-pointer ${
                   isSubscribed
                     ? "bg-gray-600 text-white hover:bg-gray-500"
                     : "bg-red-600 text-white hover:bg-red-500"
