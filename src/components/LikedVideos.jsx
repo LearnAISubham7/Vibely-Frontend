@@ -80,40 +80,42 @@ export function LikedVideosPage() {
       </div>
       {/* Right Videos List */}
       <div className="lg:w-2/3 space-y-4">
-        {LikedVideos?.map((video, index) => (
-          <div
-            key={video.video._id}
-            className="flex gap-4 items-center bg-gray-900 rounded-lg p-3 hover:bg-gray-800 transition relative"
-          >
-            <div className="flex justify-center items-center text-gray-400 font-medium">
-              {index + 1}
-            </div>
-
-            <Link
-              to={`/watch/${video.video._id}`}
-              className="w-40 h-24 flex-shrink-0 rounded-md overflow-hidden bg-black"
+        {LikedVideos?.filter((item) => item?.video !== null).map(
+          (video, index) => (
+            <div
+              key={video?.video?._id}
+              className="flex gap-4 items-center bg-gray-900 rounded-lg p-3 hover:bg-gray-800 transition relative"
             >
-              <img
-                src={video.video.thumbnail}
-                alt={video.video.title}
-                className="w-full h-full object-cover"
-              />
-            </Link>
+              <div className="flex justify-center items-center text-gray-400 font-medium">
+                {index + 1}
+              </div>
 
-            <div className="flex flex-col flex-1 overflow-hidden">
-              <h3 className="font-semibold line-clamp-2">
-                {video.video.title}
-              </h3>
-              <p className="text-sm text-gray-400 line-clamp-1">
-                {video.video.owner?.fullName}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                {Math.floor(video.video.duration / 60)} min{" "}
-                {Math.floor(video.video.duration % 60)} sec
-              </p>
+              <Link
+                to={`/watch/${video?.video?._id}`}
+                className="w-40 h-24 flex-shrink-0 rounded-md overflow-hidden bg-black"
+              >
+                <img
+                  src={video?.video?.thumbnail}
+                  alt={video?.video?.title}
+                  className="w-full h-full object-cover"
+                />
+              </Link>
+
+              <div className="flex flex-col flex-1 overflow-hidden">
+                <h3 className="font-semibold line-clamp-2">
+                  {video?.video?.title}
+                </h3>
+                <p className="text-sm text-gray-400 line-clamp-1">
+                  {video?.video?.owner?.fullName}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {Math.floor(video?.video?.duration / 60)} min{" "}
+                  {Math.floor(video?.video?.duration % 60)} sec
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
     </div>
   );
